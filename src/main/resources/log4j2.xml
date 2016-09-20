@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="info" monitorInterval="60">
+    <properties>
+        <property name="LOG_FOLDER">${env:LOG_HOME}/subscription-manager</property>
+        <property name="SERVICE_NAME">subscription-manager</property>
+        <property name="PATTERN">%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n</property>
+    </properties>
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${PATTERN}"/>
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+        </Console>
+
+        <RollingRandomAccessFile name="errorlogFile"
+                                 fileName="${LOG_FOLDER}/${SERVICE_NAME}-error.log"
+                                 filePattern="${LOG_FOLDER}/${SERVICE_NAME}-error-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="${PATTERN}"/>
+            <SizeBasedTriggeringPolicy size="5 MB"/>
+            <DefaultRolloverStrategy max="5"/>
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="applogFile"
+                                 fileName="${LOG_FOLDER}/${SERVICE_NAME}-debug.log"
+                                 filePattern="${LOG_FOLDER}/${SERVICE_NAME}-debug-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="${PATTERN}"/>
+            <SizeBasedTriggeringPolicy size="5 MB"/>
+            <DefaultRolloverStrategy max="10"/>
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+        </RollingRandomAccessFile>
+
+    </appenders>
+
+    <loggers>
+        <logger name="com.telstra.ncs" level="DEBUG" additivity="false">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="errorlogFile"/>
+            <appender-ref ref="applogFile"/>
+        </logger>
+
+        <!-- Root Logger -->
+        <root level="INFO">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="errorlogFile"/>
+            <appender-ref ref="applogFile"/>
+        </root>
+    </loggers>
+</configuration>
